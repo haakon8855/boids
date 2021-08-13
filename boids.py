@@ -7,12 +7,26 @@ class Boids():
         self.positions = np.random.rand(amount, 2) * dim
         angles = np.random.rand(amount) * np.pi * 2
         self.velocities = np.array([np.cos(angles), np.sin(angles)]).T
+
+        # Speed of boids
         self.speed = 10
+
+        # Distance when boid will try to avoid other boids
         self.tooCloseDist = 30
+
+        # View distance of each boid
         self.viewDist = 120
+
+        # How hard boids will turn when reaching the edge
         self.edgeAvoidance = 0.12
+
+        # How hard boids will turn when avoiding other boids
         self.avoidance = 0.1
+
+        # How much boid will try to be in middle of its group
         self.coherence = 0.3
+
+        # How much boid will try to follow direction of nearby boids
         self.conformity = 0.1
 
     def getPositions(self):
