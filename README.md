@@ -1,5 +1,21 @@
 # Boids
-Ultra basic implementation of boids.
+Boids are an example of an emergent system where complex behaviour 
+emerges from seemingly unintelligent individuals. 
+In this implementation, a boid is a dot on the screen 
+following a direction with a set velocity.
+
+Each boid follows three simple rules:
+
+1. Avoid colliding into nearby boids
+1. Follow the average direction of nearby boids
+1. Steer toward the average location of nearby boids
+
+When all boids follow these three rules, they will simulate a flock 
+of birds, following each other while still avoiding collisions.
+
+In addition to these three rules, a fourth rule is applied in 
+this implementation in order to keep the boids on the screen, by making them
+avoid the walls in addition to other boids.
 
 # Requirements
 Requires __PyQt5__ library:
