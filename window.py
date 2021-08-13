@@ -1,4 +1,5 @@
 from boids import Boids
+
 from PyQt5 import QtWidgets, QtGui, QtCore
 import numpy as np
 import sys
