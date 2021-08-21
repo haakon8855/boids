@@ -8,26 +8,22 @@ class Boids():
         angles = np.random.rand(amount) * np.pi * 2
         self.velocities = np.array([np.cos(angles), np.sin(angles)]).T
 
-        # Speed of boids
-        self.speed = 10
-
-        # Distance when boid will try to avoid other boids
-        self.tooCloseDist = 30
-
-        # View distance of each boid
-        self.viewDist = 120
-
-        # How hard boids will turn when reaching the edge
-        self.edgeAvoidance = 0.12
-
-        # How hard boids will turn when avoiding other boids
-        self.avoidance = 0.1
-
-        # How much boid will try to be in middle of its group
-        self.coherence = 0.3
-
-        # How much boid will try to follow direction of nearby boids
-        self.conformity = 0.1
+        self.attributes = {
+            # Speed of boids
+            "speed": 10,
+            # Distance when boid will try to avoid other boids
+            "tooCloseDist": 30,
+            # View distance of each boid
+            "viewDist": 120,
+            # How hard boids will turn when reaching the edge
+            "edgeAvoidance": 0.12,
+            # How hard boids will turn when avoiding other boids
+            "avoidance": 0.1,
+            # How much boid will try to be in middle of its group
+            "coherence": 0.3,
+            # How much boid will try to follow direction of nearby boids
+            "conformity": 0.1
+        }
 
     def getPositions(self):
         return self.positions
@@ -37,14 +33,15 @@ class Boids():
         np.delete(self.positions, index, axis=0)
         np.delete(self.velocities, index, axis=0)
         filterArray = np.linalg.norm(self.positions - position,
-                                     axis=1) < self.viewDist
+                                     axis=1) < self.attributes["viewDist"]
         return self.positions[filterArray], self.velocities[filterArray]
 
     def getAvoidVector(self, index: int, visiblePositions: np.array):
         position = self.positions[index]
         avoidVector = np.zeros(2)
-        tooCloseBoids = visiblePositions[np.linalg.norm(
-            visiblePositions - position, axis=1) < self.tooCloseDist]
+        tooCloseBoids = visiblePositions[
+            np.linalg.norm(visiblePositions -
+                           position, axis=1) < self.attributes["tooCloseDist"]]
         for pos in tooCloseBoids:
             diff = pos - position
             avoidVector = avoidVector - diff
@@ -56,7 +53,8 @@ class Boids():
         for velocity in visibleVelocities:
             percievedVelocity = percievedVelocity + velocity
         percievedVelocity = percievedVelocity / len(visibleVelocities)
-        return (percievedVelocity - self.velocities[index]) * self.conformity
+        return (percievedVelocity -
+                self.velocities[index]) * self.attributes["conformity"]
 
     def getPercievedCenter(self, index: int, visiblePositions: np.array):
         position = self.positions[index]
@@ -89,20 +87,23 @@ class Boids():
         for i in range(len(self.positions)):
             visiblePositions, visibleVelocities = self.getFilteredBoids(i)
             edgeCorrectionVector = self.getEdgeCorrectionVector(i, maxValues)
-            edgeCorrectionVector = Boids.normalize(edgeCorrectionVector,
-                                                   self.edgeAvoidance)
+            edgeCorrectionVector = Boids.normalize(
+                edgeCorrectionVector, self.attributes["edgeAvoidance"])
             avoidVector = self.getAvoidVector(i, visiblePositions)
-            avoidVector = Boids.normalize(avoidVector, self.avoidance)
+            avoidVector = Boids.normalize(avoidVector,
+                                          self.attributes["avoidance"])
             percievedVelocity = self.getPercievedVelocityVector(
                 i, visibleVelocities)
             centerVector = self.getPercievedCenter(i, visiblePositions)
-            centerVector = Boids.normalize(centerVector, self.coherence)
+            centerVector = Boids.normalize(centerVector,
+                                           self.attributes["coherence"])
 
             newVelocity = self.velocities[
                 i] + avoidVector + percievedVelocity + edgeCorrectionVector
             newVelocity = newVelocity / np.linalg.norm(newVelocity)
             newVelocities[i] = newVelocity
-        newPositions = (self.positions + newVelocities * self.speed)
+        newPositions = (self.positions +
+                        newVelocities * self.attributes["speed"])
         self.positions = newPositions
         self.velocities = newVelocities
         return self.positions

@@ -66,9 +66,9 @@ class Window(QtWidgets.QMainWindow):
             C = np.array([np.cos(angleC), np.sin(angleC)])
             C = Boids.normalize(C, 6) + position
             triangle = QtGui.QPolygon([
-                QtCore.QPoint(A[0], A[1]),
-                QtCore.QPoint(B[0], B[1]),
-                QtCore.QPoint(C[0], C[1])
+                QtCore.QPoint(int(A[0]), int(A[1])),
+                QtCore.QPoint(int(B[0]), int(B[1])),
+                QtCore.QPoint(int(C[0]), int(C[1]))
             ])
             painter.drawPolygon(triangle)
 
