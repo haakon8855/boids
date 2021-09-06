@@ -18,9 +18,9 @@ this implementation in order to keep the boids on the screen, by making them
 avoid the walls in addition to other boids.
 
 # Requirements
-Requires __PyQt5__ library:
+Requires __PyQt5__ and __NumPy__ libraries:
 ```
-pip install PyQt5
+pip install pyqt5 numpy
 ```
 
 # Configuration
