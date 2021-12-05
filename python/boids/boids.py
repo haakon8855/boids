@@ -10,19 +10,19 @@ class Boids():
 
         self.attributes = {
             # Speed of boids
-            "speed": 10,
+            "speed": 7,
             # Distance when boid will try to avoid other boids
             "tooCloseDist": 30,
             # View distance of each boid
-            "viewDist": 120,
+            "viewDist": 100,
             # How hard boids will turn when reaching the edge
-            "edgeAvoidance": 0.12,
+            "edgeAvoidance": 0.09,
             # How hard boids will turn when avoiding other boids
             "avoidance": 0.1,
             # How much boid will try to be in middle of its group
             "coherence": 0.3,
             # How much boid will try to follow direction of nearby boids
-            "conformity": 0.1
+            "conformity": 0.08
         }
 
     def getPositions(self):

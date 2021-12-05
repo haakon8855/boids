@@ -6,7 +6,7 @@ import sys
 
 
 class Window(QtWidgets.QMainWindow):
-    def __init__(self, fps=60, amount=100) -> None:
+    def __init__(self, fps=60, amount=200) -> None:
         super().__init__()
         title = "Boids"
         top = 200
