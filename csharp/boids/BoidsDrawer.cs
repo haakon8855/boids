@@ -10,6 +10,9 @@ namespace boids
         private SpriteBatch _spriteBatch;
         private Boid _boid;
         private Texture2D _whiteRectangle;
+        private Vector2 _boidSize = new Vector2(10f, 10f);
+        private Color _bgColor = new Color(30, 30, 30);
+        private Color _fgColor = new Color(100, 100, 170);
 
         public BoidsDrawer()
         {
@@ -50,14 +53,22 @@ namespace boids
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(_bgColor);
 
             _spriteBatch.Begin();
 
             float[] boidPos = _boid.GetPosition();
-            _spriteBatch.Draw(_whiteRectangle, new Vector2(boidPos[0], boidPos[1]), null,
-                    Color.Chocolate, 0f, Vector2.Zero, new Vector2(20f, 20f),
-                    SpriteEffects.None, 0f);
+            _spriteBatch.Draw(
+                _whiteRectangle,
+                new Vector2(boidPos[0], boidPos[1]),
+                null,
+                _fgColor,
+                0f,
+                Vector2.Zero,
+                _boidSize,
+                SpriteEffects.None,
+                0f
+            );
 
             _spriteBatch.End();
 
