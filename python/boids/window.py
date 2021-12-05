@@ -1,18 +1,23 @@
-from boids import Boids
+"""Haakon8855"""
 
+import sys
 from PyQt5 import QtWidgets, QtGui, QtCore
 import numpy as np
-import sys
+
+from boids import Boids
 
 
 class Window(QtWidgets.QMainWindow):
+    """
+    Window class for drawing all boids on a canvas.
+    """
     def __init__(self, fps=60, amount=200) -> None:
         super().__init__()
         title = "Boids"
         top = 200
         left = 100
         self.dim = [1400, 900]
-        self.boidSize = 10
+        self.boid_size = 10
         self.fps = fps
         self.amount = amount
 
@@ -31,20 +36,38 @@ class Window(QtWidgets.QMainWindow):
         self.boids = Boids(amount, self.dim)
 
     def start(self) -> None:
+        """
+        Start the timer, calling self.iteration to update the boids' positions
+        and velocities, then drawing all boids.
+        """
         self.timer.start(int(1000 / self.fps))
 
     def stop(self) -> None:
+        """
+        Stop the timer, stopping updating of boids' positions.
+        """
         self.timer.stop()
 
     def iteration(self) -> None:
+        """
+        Run one iteration of the program (one frame). Updates the positions of
+        the boids and their velocities. Then it draws all the boids on the
+        screen in their new positions.
+        """
         self.boids.move(self.dim)
-        self.drawBoids()
+        self.draw_boids()
 
     def paintEvent(self, event) -> None:
-        canvasPainter = QtGui.QPainter(self)
-        canvasPainter.drawImage(self.rect(), self.image, self.image.rect())
+        """
+        Paint event called by the PyQt
+        """
+        canvas_painter = QtGui.QPainter(self)
+        canvas_painter.drawImage(self.rect(), self.image, self.image.rect())
 
-    def drawBoids(self) -> None:
+    def draw_boids(self) -> None:
+        """
+        Draws all boids as triangles
+        """
         self.image.fill(self.colors["bg"])
         painter = QtGui.QPainter(self.image)
 
@@ -54,21 +77,21 @@ class Window(QtWidgets.QMainWindow):
 
         for i, position in enumerate(self.boids.positions):
             angle = np.arccos(self.boids.velocities[i][0])
-            if (self.boids.velocities[i][1] < 0):
+            if self.boids.velocities[i][1] < 0:
                 angle = -angle
-            angleA = angle
-            angleB = angle - np.pi * (3 / 4)
-            angleC = angle + np.pi * (3 / 4)
-            A = np.array([np.cos(angleA), np.sin(angleA)])
-            A = Boids.normalize(A, 10) + position
-            B = np.array([np.cos(angleB), np.sin(angleB)])
-            B = Boids.normalize(B, 6) + position
-            C = np.array([np.cos(angleC), np.sin(angleC)])
-            C = Boids.normalize(C, 6) + position
+            angle_a = angle
+            angle_b = angle - np.pi * (3 / 4)
+            angle_c = angle + np.pi * (3 / 4)
+            point_a = np.array([np.cos(angle_a), np.sin(angle_a)])
+            point_a = Boids.normalize(point_a, 10) + position
+            point_b = np.array([np.cos(angle_b), np.sin(angle_b)])
+            point_b = Boids.normalize(point_b, 6) + position
+            point_c = np.array([np.cos(angle_c), np.sin(angle_c)])
+            point_c = Boids.normalize(point_c, 6) + position
             triangle = QtGui.QPolygon([
-                QtCore.QPoint(int(A[0]), int(A[1])),
-                QtCore.QPoint(int(B[0]), int(B[1])),
-                QtCore.QPoint(int(C[0]), int(C[1]))
+                QtCore.QPoint(int(point_a[0]), int(point_a[1])),
+                QtCore.QPoint(int(point_b[0]), int(point_b[1])),
+                QtCore.QPoint(int(point_c[0]), int(point_c[1]))
             ])
             painter.drawPolygon(triangle)
 
