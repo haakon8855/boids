@@ -57,12 +57,14 @@ namespace boids
             return _heading[1] < 0 ? -angle : angle;
         }
 
-        private void UpdateHeading()
+        private void UpdateHeading(List<float[]> positions, List<float> angles)
         {
             float[] edgeAvoidanceVector =
                 Normalize(GetEdgeAvoidanceVector(), _attributes["edgeAvoidance"]);
-            _heading[0] = _heading[0] + edgeAvoidanceVector[0];
-            _heading[1] = _heading[1] + edgeAvoidanceVector[1];
+            float[] avoidVector =
+                Normalize(GetAvoidVector(positions), _attributes["avoidance"]);
+            _heading[0] = _heading[0] + edgeAvoidanceVector[0] + avoidVector[0];
+            _heading[1] = _heading[1] + edgeAvoidanceVector[1] + avoidVector[1];
             _heading = Normalize(_heading, 1f);
         }
 
@@ -95,9 +97,33 @@ namespace boids
             return edgeAvoidanceVector;
         }
 
-        public void Move(float[][] positions, float[] angles)
+        private float[] GetAvoidVector(List<float[]> positions)
         {
-            UpdateHeading();
+            float[] avoidVector = { 0, 0 };
+            List<float[]> tooCloseBoids = new List<float[]>();
+            float[] diff;
+            foreach (float[] position in positions)
+            {
+                if (DistanceBetween(_position, position) < _attributes["tooCloseDist"])
+                {
+                    tooCloseBoids.Add(position);
+                }
+            }
+            foreach (float[] position in tooCloseBoids)
+            {
+                diff = new float[] {
+                    position[0] - _position[0],
+                    position[1] - _position[1]
+                };
+                avoidVector[0] = avoidVector[0] - diff[0];
+                avoidVector[1] = avoidVector[1] - diff[1];
+            }
+            return avoidVector;
+        }
+
+        public void Move(List<float[]> positions, List<float> angles)
+        {
+            UpdateHeading(positions, angles);
             for (var i = 0; i < _position.Length; i++)
             {
                 _position[i] += _heading[i] * _attributes["velocity"];
@@ -119,9 +145,14 @@ namespace boids
         public float DistanceTo(Boid boid)
         {
             float[] other = boid.GetPosition();
+            return DistanceBetween(_position, other);
+        }
+
+        public static float DistanceBetween(float[] pos1, float[] pos2)
+        {
             return (float)Math.Sqrt((
-                Math.Pow((_position[0] - other[0]), 2) +
-                Math.Pow((_position[1] - other[1]), 2)
+                Math.Pow((pos2[0] - pos1[0]), 2) +
+                Math.Pow((pos2[1] - pos1[1]), 2)
             ));
         }
 

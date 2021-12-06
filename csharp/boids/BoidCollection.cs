@@ -25,18 +25,18 @@ namespace boids
         public void Move()
         {
             float viewDist = _boids[0].GetAttribute("viewDist");
-            float[][] visiblePositions;
-            float[] visibleAngles;
+            List<float[]> visiblePositions;
+            List<float> visibleAngles;
             for (int i = 0; i < _boids.Length; i++)
             {
-                visiblePositions = new float[][] { };
-                visibleAngles = new float[] { };
+                visiblePositions = new List<float[]>();
+                visibleAngles = new List<float>();
                 for (int j = 0; j < _boids.Length; j++)
                 {
                     if (_boids[i].DistanceTo(_boids[j]) < viewDist)
                     {
-                        visiblePositions.Append(_boids[j].GetPosition());
-                        visibleAngles.Append(_boids[j].GetAngle());
+                        visiblePositions.Add(_boids[j].GetPosition());
+                        visibleAngles.Add(_boids[j].GetAngle());
                     }
                 }
                 _boids[i].Move(visiblePositions, visibleAngles);
