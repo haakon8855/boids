@@ -7,11 +7,13 @@ namespace boids
 {
     public class BoidsDrawer : Game
     {
+        public static int[] Dimensions = { 1200, 720 };
+        private int numBoids = 100;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private Boid _boid;
+        private BoidCollection _boids;
         private Texture2D _whiteRectangle;
-        private Vector2 _boidSize = new Vector2(10f, 10f);
+        private Vector2 _boidSize = new Vector2(7f, 7f);
         private Color _bgColor = new Color(30, 30, 30);
         private Color _fgColor = new Color(100, 100, 170);
 
@@ -20,12 +22,16 @@ namespace boids
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            _boid = new Boid();
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            _graphics.PreferredBackBufferWidth = Dimensions[0];
+            _graphics.PreferredBackBufferHeight = Dimensions[1];
+            _graphics.ApplyChanges();
+
+            _boids = new BoidCollection(numBoids);
 
             base.Initialize();
         }
@@ -47,7 +53,7 @@ namespace boids
 
             // TODO: Add your update logic here
 
-            _boid.Move();
+            _boids.Move();
 
             base.Update(gameTime);
         }
@@ -58,20 +64,26 @@ namespace boids
 
             _spriteBatch.Begin();
 
-            float angle = _boid.GetAngle();
+            float[] angles = _boids.GetAngles();
+            float[][] boidPositions = _boids.GetPositions();
 
-            float[] boidPos = _boid.GetPosition();
-            _spriteBatch.Draw(
-                _whiteRectangle,        // texture
-                new Vector2(boidPos[0], boidPos[1]), // Position
-                null,                   // Source rectangle
-                _fgColor,               // Color
-                angle,                  // Rotation
-                new Vector2(0.5f, 0.5f),// Origin
-                _boidSize,              // Scale
-                SpriteEffects.None,     // Effects
-                0f                      // layerDepth
-            );
+            for (var i = 0; i < boidPositions.Length; i++)
+            {
+                _spriteBatch.Draw(
+                    _whiteRectangle,        // texture
+                    new Vector2(
+                        boidPositions[i][0],
+                        boidPositions[i][1]
+                        ), // Position
+                    null,                   // Source rectangle
+                    _fgColor,               // Color
+                    angles[i],                  // Rotation
+                    new Vector2(0.5f, 0.5f),// Origin
+                    _boidSize,              // Scale
+                    SpriteEffects.None,     // Effects
+                    0f                      // layerDepth
+                );
+            }
 
             _spriteBatch.End();
 
