@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -57,17 +58,19 @@ namespace boids
 
             _spriteBatch.Begin();
 
+            float angle = _boid.GetAngle();
+
             float[] boidPos = _boid.GetPosition();
             _spriteBatch.Draw(
-                _whiteRectangle,
-                new Vector2(boidPos[0], boidPos[1]),
-                null,
-                _fgColor,
-                0f,
-                Vector2.Zero,
-                _boidSize,
-                SpriteEffects.None,
-                0f
+                _whiteRectangle,        // texture
+                new Vector2(boidPos[0], boidPos[1]), // Position
+                null,                   // Source rectangle
+                _fgColor,               // Color
+                angle,                  // Rotation
+                new Vector2(0.5f, 0.5f),// Origin
+                _boidSize,              // Scale
+                SpriteEffects.None,     // Effects
+                0f                      // layerDepth
             );
 
             _spriteBatch.End();
