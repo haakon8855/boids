@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
 
 namespace boids
 {
@@ -57,17 +58,6 @@ namespace boids
             return _heading[1] < 0 ? -angle : angle;
         }
 
-        private void UpdateHeading(List<float[]> positions, List<float> angles)
-        {
-            float[] edgeAvoidanceVector =
-                Normalize(GetEdgeAvoidanceVector(), _attributes["edgeAvoidance"]);
-            float[] avoidVector =
-                Normalize(GetAvoidVector(positions), _attributes["avoidance"]);
-            _heading[0] = _heading[0] + edgeAvoidanceVector[0] + avoidVector[0];
-            _heading[1] = _heading[1] + edgeAvoidanceVector[1] + avoidVector[1];
-            _heading = Normalize(_heading, 1f);
-        }
-
         private float[] GetEdgeAvoidanceVector()
         {
             float offsetX = (float)(BoidsDrawer.Dimensions[0] * 0.2);
@@ -119,6 +109,34 @@ namespace boids
                 avoidVector[1] = avoidVector[1] - diff[1];
             }
             return avoidVector;
+        }
+
+        private float[] GetCenterVector(List<float[]> positions)
+        {
+            return new float[] {
+                (positions.Select(point => point[0]).Sum() / positions.Count())
+                     - _position[0],
+                (positions.Select(point => point[1]).Sum() / positions.Count())
+                     - _position[1]
+            };
+        }
+
+        private void UpdateHeading(List<float[]> positions, List<float> angles)
+        {
+            float[] edgeAvoidanceVector =
+                Normalize(GetEdgeAvoidanceVector(), _attributes["edgeAvoidance"]);
+            float[] avoidVector =
+                Normalize(GetAvoidVector(positions), _attributes["avoidance"]);
+            float[] centerVector =
+                Normalize(GetCenterVector(positions), _attributes["coherence"]);
+            for (var i = 0; i < _heading.Length; i++)
+            {
+                _heading[i] = _heading[i] +
+                    edgeAvoidanceVector[i] +
+                    avoidVector[i] +
+                    centerVector[i];
+            }
+            _heading = Normalize(_heading, 1f);
         }
 
         public void Move(List<float[]> positions, List<float> angles)
