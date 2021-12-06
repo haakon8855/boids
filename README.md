@@ -18,14 +18,17 @@ this implementation in order to keep the boids on the screen, by making them
 avoid the walls in addition to other boids.
 
 # Requirements
-Requires __PyQt5__ and __NumPy__ libraries:
-```
-pip install pyqt5 numpy
-```
+## Python
+The Python version of boids requires Python 3.9 or newer and the __PyQt5__ and __NumPy__ libraries:
+
+    pip install pyqt5 numpy
+
+## C#
+The C# version of boids requires .NET (only tested with .NET 6.0) and XNA/MonoGame libraries for .NET.
 
 # Configuration
 No config file has been made, so the constructor in 
-the _Boids_-class has to be manually edited in order to change input parameters.
+the _Boids_-class (Python) or _Boid_-class (C#) has to be manually edited in order to change input parameters.
 
 # License
 This code is protected under the [GNU General Public License 3.0](http://www.gnu.org/licenses/gpl-3.0.html)
