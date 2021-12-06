@@ -27,19 +27,21 @@ namespace boids
         private void Initialize()
         {
             // Velocity of boids
-            _attributes["velocity"] = 5f;
+            _attributes["velocity"] = 6f;
             // Distance when boid will try to avoid other boids
             _attributes["viewDist"] = 100f;
             // View distance of each boid
-            _attributes["tooCloseDist"] = 30f;
+            _attributes["tooCloseDist"] = 35f;
             // How hard boids will turn when reaching the edge
-            _attributes["edgeAvoidance"] = 0.09f;
+            _attributes["edgeAvoidance"] = 0.07f;
             // How hard boids will turn when avoiding other boids
-            _attributes["avoidance"] = 0.1f;
+            _attributes["avoidance"] = 0.05f;
             // How much boid will try to be in middle of its group
-            _attributes["coherence"] = 0.3f;
+            _attributes["coherence"] = 0.02f;
             // How much boid will try to follow direction of nearby boids
-            _attributes["conformity"] = 0.08f;
+            _attributes["conformity"] = 0.06f;
+            // When will edge avoidance kick in
+            _attributes["edgeOffset"] = 0.2f;
         }
 
         public float GetAttribute(string key)
@@ -52,6 +54,11 @@ namespace boids
             return _position;
         }
 
+        public float[] GetHeading()
+        {
+            return _heading;
+        }
+
         public float GetAngle()
         {
             float angle = (float)Math.Acos(_heading[0]);
@@ -60,8 +67,8 @@ namespace boids
 
         private float[] GetEdgeAvoidanceVector()
         {
-            float offsetX = (float)(BoidsDrawer.Dimensions[0] * 0.2);
-            float offsetY = (float)(BoidsDrawer.Dimensions[1] * 0.2);
+            float offsetX = (float)(BoidsDrawer.Dimensions[0] * _attributes["edgeOffset"]);
+            float offsetY = (float)(BoidsDrawer.Dimensions[1] * _attributes["edgeOffset"]);
             float[] edgeAvoidanceVector = { 0, 0 };
             // X component
             if (_position[0] < offsetX)
@@ -121,7 +128,28 @@ namespace boids
             };
         }
 
-        private void UpdateHeading(List<float[]> positions, List<float> angles)
+        private float[] GetPercievedHeadingVector(List<float[]> headings)
+        {
+            float[] percievedHeadingVector = new float[] { 0, 0 };
+            foreach (float[] heading in headings)
+            {
+                for (int i = 0; i < percievedHeadingVector.Length; i++)
+                {
+                    percievedHeadingVector[i] += heading[i];
+                }
+            }
+
+            for (int i = 0; i < percievedHeadingVector.Length; i++)
+            {
+                percievedHeadingVector[i] /= headings.Count();
+                percievedHeadingVector[i] -= _heading[i];
+                // May have to scale with "conformity" here
+                percievedHeadingVector[i] *= _attributes["conformity"];
+            }
+            return percievedHeadingVector;
+        }
+
+        private void UpdateHeading(List<float[]> positions, List<float[]> headings)
         {
             float[] edgeAvoidanceVector =
                 Normalize(GetEdgeAvoidanceVector(), _attributes["edgeAvoidance"]);
@@ -129,20 +157,24 @@ namespace boids
                 Normalize(GetAvoidVector(positions), _attributes["avoidance"]);
             float[] centerVector =
                 Normalize(GetCenterVector(positions), _attributes["coherence"]);
-            for (var i = 0; i < _heading.Length; i++)
+            // float[] percievedHeadingVector =
+            //     Normalize(GetPercievedHeadingVector(headings), _attributes["conformity"]);
+            float[] percievedHeadingVector = GetPercievedHeadingVector(headings);
+            for (int i = 0; i < _heading.Length; i++)
             {
                 _heading[i] = _heading[i] +
                     edgeAvoidanceVector[i] +
                     avoidVector[i] +
-                    centerVector[i];
+                    centerVector[i] +
+                    percievedHeadingVector[i];
             }
             _heading = Normalize(_heading, 1f);
         }
 
-        public void Move(List<float[]> positions, List<float> angles)
+        public void Move(List<float[]> positions, List<float[]> headings)
         {
-            UpdateHeading(positions, angles);
-            for (var i = 0; i < _position.Length; i++)
+            UpdateHeading(positions, headings);
+            for (int i = 0; i < _position.Length; i++)
             {
                 _position[i] += _heading[i] * _attributes["velocity"];
             }

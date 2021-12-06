@@ -8,7 +8,7 @@ namespace boids
     public class BoidsDrawer : Game
     {
         public static int[] Dimensions = { 1200, 720 };
-        private int numBoids = 100;
+        private int numBoids = 250;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private BoidCollection _boids;
