@@ -143,7 +143,6 @@ namespace boids
             {
                 percievedHeadingVector[i] /= headings.Count();
                 percievedHeadingVector[i] -= _heading[i];
-                // May have to scale with "conformity" here
                 percievedHeadingVector[i] *= _attributes["conformity"];
             }
             return percievedHeadingVector;
@@ -157,8 +156,6 @@ namespace boids
                 Normalize(GetAvoidVector(positions), _attributes["avoidance"]);
             float[] centerVector =
                 Normalize(GetCenterVector(positions), _attributes["coherence"]);
-            // float[] percievedHeadingVector =
-            //     Normalize(GetPercievedHeadingVector(headings), _attributes["conformity"]);
             float[] percievedHeadingVector = GetPercievedHeadingVector(headings);
             for (int i = 0; i < _heading.Length; i++)
             {
