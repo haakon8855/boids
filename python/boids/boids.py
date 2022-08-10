@@ -7,6 +7,7 @@ class Boids():
     """
     Boids class containing data for all boids
     """
+
     def __init__(self, amount, dim) -> None:
         self.positions = np.random.rand(amount, 2) * dim
         angles = np.random.rand(amount) * np.pi * 2
@@ -14,19 +15,19 @@ class Boids():
 
         self.attributes = {
             # Speed of boids
-            "speed": 7,
+            "speed": 3.5,
             # Distance when boid will try to avoid other boids
-            "too_close_dist": 30,
+            "too_close_dist": 15,
             # View distance of each boid
-            "view_dist": 100,
+            "view_dist": 65,
             # How hard boids will turn when reaching the edge
-            "edge_avoidance": 0.09,
+            "edge_avoidance": 0.03,
             # How hard boids will turn when avoiding other boids
-            "avoidance": 0.1,
+            "avoidance": 0.05,
             # How much boid will try to be in middle of its group
-            "coherence": 0.3,
+            "coherence": 0.15,
             # How much boid will try to follow direction of nearby boids
-            "conformity": 0.08
+            "conformity": 0.04
         }
 
     def get_positions(self):
