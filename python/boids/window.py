@@ -65,6 +65,11 @@ class Window():
         the boids and their velocities.
         """
         self.boids.move(self.size)
+
+    def render(self):
+        """
+        Draws all boids on the screen with their current position and angle.
+        """
         for position, velocity, sboid in zip(self.boids.positions,
                                              self.boids.velocities,
                                              self.sboid_list):
@@ -74,11 +79,6 @@ class Window():
             sboid.rotate(angle)
             sboid.rect.centerx = position[0]
             sboid.rect.centery = position[1]
-
-    def render(self):
-        """
-        Draws all boids on the screen with their current position and angle.
-        """
         self.sboid_list.update()
         self._display_surf.fill(COLOR_BG)
         self.sboid_list.draw(self._display_surf)
