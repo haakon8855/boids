@@ -27,19 +27,19 @@ namespace boids
         private void Initialize()
         {
             // Velocity of boids
-            _attributes["velocity"] = 6f;
+            _attributes["velocity"] = 3.5f;
             // Distance when boid will try to avoid other boids
-            _attributes["viewDist"] = 100f;
+            _attributes["viewDist"] = 65f;
             // View distance of each boid
-            _attributes["tooCloseDist"] = 35f;
+            _attributes["tooCloseDist"] = 15f;
             // How hard boids will turn when reaching the edge
-            _attributes["edgeAvoidance"] = 0.07f;
+            _attributes["edgeAvoidance"] = 0.02f;
             // How hard boids will turn when avoiding other boids
-            _attributes["avoidance"] = 0.05f;
+            _attributes["avoidance"] = 0.12f;
             // How much boid will try to be in middle of its group
-            _attributes["coherence"] = 0.02f;
+            _attributes["coherence"] = 0.01f;
             // How much boid will try to follow direction of nearby boids
-            _attributes["conformity"] = 0.06f;
+            _attributes["conformity"] = 0.04f;
             // When will edge avoidance kick in
             _attributes["edgeOffset"] = 0.2f;
         }
