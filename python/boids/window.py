@@ -15,12 +15,12 @@ class Window():
     Window class for drawing all boids on a canvas.
     """
 
-    def __init__(self, fps=60, amount=150) -> None:
+    def __init__(self, fps: int = 60, amount: int = 150) -> None:
         self.fps = fps
         self.amount = amount
         self.pos = self.top, self.left = 200, 100
         self.size = self.width, self.height = [1280, 720]
-        self.title = "Boids"
+        self.title = 'Boids'
 
         self._running = True
         self._display_surf = None
@@ -52,21 +52,21 @@ class Window():
             sboid = SBoid(50, 30, position, COLOR_BG, COLOR_BOIDS)
             self.sboid_list.add(sboid)
 
-    def handle_event(self, event: pygame.event):
+    def handle_event(self, event: pygame.event) -> None:
         """
         Handles pygame events such as quitting or keypresses.
         """
         if event.type == pygame.QUIT:
             self._running = False
 
-    def iteration(self):
+    def iteration(self) -> None:
         """
         Run one iteration of the program (one frame). Updates the positions of
         the boids and their velocities.
         """
         self.boids.move(self.size)
 
-    def render(self):
+    def render(self) -> None:
         """
         Draws all boids on the screen with their current position and angle.
         """
@@ -84,13 +84,13 @@ class Window():
         self.sboid_list.draw(self._display_surf)
         pygame.display.flip()
 
-    def quit(self):
+    def quit(self) -> None:
         """
         Quits the pygame window and exits the program gracefully.
         """
         pygame.quit()
 
-    def run(self):
+    def run(self) -> None:
         """
         Runs the main loop handling state updates and rendering.
         """
@@ -106,6 +106,6 @@ class Window():
         self.quit()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     window = Window()
     window.run()

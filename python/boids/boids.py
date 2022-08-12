@@ -9,26 +9,26 @@ class Boids():
     Boids class containing data for all boids
     """
 
-    def __init__(self, amount, dim) -> None:
+    def __init__(self, amount: int, dim: 'list[int]') -> None:
         self.positions = np.random.rand(amount, 2) * dim
         angles = np.random.rand(amount) * np.pi * 2
         self.velocities = np.array([np.cos(angles), np.sin(angles)]).T
 
         self.attributes = {
             # Speed of boids
-            "speed": 3.5,
+            'speed': 3.5,
             # Distance when boid will try to avoid other boids
-            "too_close_dist": 15,
+            'too_close_dist': 15,
             # View distance of each boid
-            "view_dist": 65,
+            'view_dist': 65,
             # How hard boids will turn when reaching the edge
-            "edge_avoidance": 0.03,
+            'edge_avoidance': 0.03,
             # How hard boids will turn when avoiding other boids
-            "avoidance": 0.05,
+            'avoidance': 0.05,
             # How much boid will try to be in middle of its group
-            "coherence": 0.15,
+            'coherence': 0.15,
             # How much boid will try to follow direction of nearby boids
-            "conformity": 0.04
+            'conformity': 0.04
         }
 
     def get_positions(self):
@@ -43,7 +43,7 @@ class Boids():
         """
         tree = BallTree(self.positions, leaf_size=2)
         indices = tree.query_radius(self.positions,
-                                    r=self.attributes["view_dist"])
+                                    r=self.attributes['view_dist'])
         return indices
 
     def get_avoid_vector(self, index: int, visible_positions: np.array):
@@ -55,7 +55,7 @@ class Boids():
         avoid_vector = np.zeros(2)
         too_close_boids = visible_positions[np.linalg.norm(
             visible_positions -
-            position, axis=1) < self.attributes["too_close_dist"]]
+            position, axis=1) < self.attributes['too_close_dist']]
         for pos in too_close_boids:
             diff = pos - position
             avoid_vector = avoid_vector - diff
@@ -72,7 +72,7 @@ class Boids():
             percieved_velocity = percieved_velocity + velocity
         percieved_velocity = percieved_velocity / len(visible_velocities)
         return (percieved_velocity -
-                self.velocities[index]) * self.attributes["conformity"]
+                self.velocities[index]) * self.attributes['conformity']
 
     def get_percieved_center(self, index: int, visible_positions: np.array):
         """
@@ -82,7 +82,7 @@ class Boids():
         mass_center = visible_positions.sum(axis=0) / len(visible_positions)
         return mass_center - position
 
-    def get_edge_correction_vector(self, index: int, max_values: "list[int]"):
+    def get_edge_correction_vector(self, index: int, max_values: 'list[int]'):
         """
         Returns the edge avoidance vector. A vector pointing away from the edge
         of the screen.
@@ -111,7 +111,7 @@ class Boids():
             vector = (vector / np.linalg.norm(vector)) * scale
         return vector
 
-    def move(self, max_values: "list[int]"):
+    def move(self, max_values: 'list[int]'):
         """
         Combines all types of vector to get a velocity vector for each boid.
         Each boid is then moved in the direction of this vector.
@@ -125,22 +125,22 @@ class Boids():
             edge_correction_vector = self.get_edge_correction_vector(
                 i, max_values)
             edge_correction_vector = Boids.normalize(
-                edge_correction_vector, self.attributes["edge_avoidance"])
+                edge_correction_vector, self.attributes['edge_avoidance'])
             avoid_vector = self.get_avoid_vector(i, visible_positions)
             avoid_vector = Boids.normalize(avoid_vector,
-                                           self.attributes["avoidance"])
+                                           self.attributes['avoidance'])
             percieved_velocity = self.get_percieved_velocity_vector(
                 i, visible_velocities)
             center_vector = self.get_percieved_center(i, visible_positions)
             center_vector = Boids.normalize(center_vector,
-                                            self.attributes["coherence"])
+                                            self.attributes['coherence'])
 
             new_velocity = self.velocities[
                 i] + avoid_vector + percieved_velocity + edge_correction_vector
             new_velocity = new_velocity / np.linalg.norm(new_velocity)
             new_velocities[i] = new_velocity
         new_positions = (self.positions +
-                         new_velocities * self.attributes["speed"])
+                         new_velocities * self.attributes['speed'])
         self.positions = new_positions
         self.velocities = new_velocities
         return self.positions
