@@ -1,6 +1,7 @@
 """haakon8855"""
 
 import numpy as np
+from sklearn.neighbors import BallTree
 
 
 class Boids():
@@ -36,16 +37,14 @@ class Boids():
         """
         return self.positions
 
-    def get_filtered_boids(self, index: int):
+    def get_boid_filter(self):
         """
-        Returns all boids visible by the boid given by index.
+        Returns a list of lists of indices of all boids visible every boid.
         """
-        position = self.positions[index]
-        np.delete(self.positions, index, axis=0)
-        np.delete(self.velocities, index, axis=0)
-        filter_array = np.linalg.norm(self.positions - position,
-                                      axis=1) < self.attributes["view_dist"]
-        return self.positions[filter_array], self.velocities[filter_array]
+        tree = BallTree(self.positions, leaf_size=2)
+        indices = tree.query_radius(self.positions,
+                                    r=self.attributes["view_dist"])
+        return indices
 
     def get_avoid_vector(self, index: int, visible_positions: np.array):
         """
@@ -119,8 +118,10 @@ class Boids():
         """
         max_values = np.array(max_values)
         new_velocities = self.velocities.copy()
+        visibile_indices = self.get_boid_filter()
         for i in range(len(self.positions)):
-            visible_positions, visible_velocities = self.get_filtered_boids(i)
+            visible_positions = self.positions[visibile_indices[i]]
+            visible_velocities = self.velocities[visibile_indices[i]]
             edge_correction_vector = self.get_edge_correction_vector(
                 i, max_values)
             edge_correction_vector = Boids.normalize(
