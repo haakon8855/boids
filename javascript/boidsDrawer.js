@@ -1,10 +1,11 @@
 // Haakon8855
 
 class BoidsDrawer {
-    constructor(fps = 60, numBoids = 200) {
+    constructor(fps = 60, numBoids = 250) {
         this.fps = fps;
         this.numBoids = numBoids;
         this.size = [window.innerWidth, window.innerHeight];
+        this.spriteSize = [15, 8];
 
         this.running = true;
         this.canvas = document.getElementById("canvas");
@@ -52,8 +53,18 @@ class BoidsDrawer {
             // Triangle
             this.ctx.beginPath();
             this.ctx.moveTo(positions[i][0], positions[i][1]);
-            this.ctx.lineTo(positions[i][0] + 20, positions[i][1] + 5);
-            this.ctx.lineTo(positions[i][0], positions[i][1] + 10);
+            this.ctx.lineTo(
+                positions[i][0] + this.spriteSize[0],
+                positions[i][1] + this.spriteSize[1] / 2
+            );
+            this.ctx.lineTo(
+                positions[i][0],
+                positions[i][1] + this.spriteSize[1]
+            );
+            this.ctx.lineTo(
+                positions[i][0] + this.spriteSize[0] / 4,
+                positions[i][1] + this.spriteSize[1] / 2
+            );
             this.ctx.lineTo(positions[i][0], positions[i][1]);
             this.ctx.fill();
 
