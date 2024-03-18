@@ -1,14 +1,2 @@
-﻿using System;
-
-namespace boids
-{
-    public static class Program
-    {
-        [STAThread]
-        static void Main()
-        {
-            using (var boidsDrawer = new BoidsDrawer())
-                boidsDrawer.Run();
-        }
-    }
-}
+﻿using var game = new Boids.Drawer();
+game.Run();
