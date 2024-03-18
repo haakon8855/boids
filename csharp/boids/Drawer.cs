@@ -58,8 +58,8 @@ public class Drawer : Game
 
         _spriteBatch.Begin();
 
-        var angles = Boids.Angles();
-        var boidPositions = Boids.Positions();
+        var angles = Boids.Angles;
+        var boidPositions = Boids.Positions;
 
         for (var i = 0; i < boidPositions.Length; i++)
         {

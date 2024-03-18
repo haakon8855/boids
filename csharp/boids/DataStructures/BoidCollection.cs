@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Boids.DataStructures;
 public class BoidCollection
 {
     public Boid[] Boids { get; private set; }
+    public double[][] Positions => Boids.Select(b => b.Position).ToArray();
+    public double[] Angles => Boids.Select(b => b.Angle).ToArray();
 
     public BoidCollection(int numBoids)
     {
@@ -43,21 +46,5 @@ public class BoidCollection
             }
             Boids[i].Move(visiblePositions, visibleHeadings);
         }
-    }
-
-    public double[][] Positions()
-    {
-        var positions = new double[Boids.Length][];
-        for (int i = 0; i < Boids.Length; i++)
-            positions[i] = Boids[i].Position;
-        return positions;
-    }
-
-    public double[] Angles()
-    {
-        var angles = new double[Boids.Length];
-        for (var i = 0; i < Boids.Length; i++)
-            angles[i] = Boids[i].GetAngle();
-        return angles;
     }
 }

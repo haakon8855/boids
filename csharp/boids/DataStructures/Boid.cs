@@ -8,6 +8,7 @@ public class Boid
 {
     public double[] Position { get; private set; }
     public double[] Heading { get; private set; } = [0.5, 0.5];
+    public double Angle => ((Heading[1] < 0) ? -1 : 1) * Math.Acos(Heading[0]);
     public Dictionary<string, double> Attributes { get; private set; } = new();
 
     public Boid(double positionX, double positionY)
@@ -36,13 +37,7 @@ public class Boid
         Attributes["edgeOffset"] = 0.2f;
     }
 
-    public double GetAngle()
-    {
-        var angle = Math.Acos(Heading[0]);
-        return (Heading[1] < 0) ? -angle : angle;
-    }
-
-    private double[] GetEdgeAvoidanceVector()
+    private double[] CalculateEdgeAvoidanceVector()
     {
         var offsetX = Drawer.Dimensions[0] * Attributes["edgeOffset"];
         var offsetY = Drawer.Dimensions[1] * Attributes["edgeOffset"];
@@ -63,7 +58,7 @@ public class Boid
         return edgeAvoidanceVector;
     }
 
-    private double[] GetAvoidVector(List<double[]> positions)
+    private double[] CalculateBoidAvoidanceVector(List<double[]> positions)
     {
         double[] avoidVector = [0, 0];
         List<double[]> tooCloseBoids = new();
@@ -90,7 +85,7 @@ public class Boid
         return avoidVector;
     }
 
-    private double[] GetCenterVector(List<double[]> positions)
+    private double[] CalculateCenterVector(List<double[]> positions)
     {
         return [
             (positions.Select(p => p[0]).Sum() / positions.Count()) - Position[0],
@@ -98,7 +93,7 @@ public class Boid
         ];
     }
 
-    private double[] GetPercievedHeadingVector(List<double[]> headings)
+    private double[] CalculatePercievedHeadingVector(List<double[]> headings)
     {
         var percievedHeadingVector = new double[] { 0, 0 };
         foreach (var heading in headings)
@@ -121,10 +116,10 @@ public class Boid
 
     private void UpdateHeading(List<double[]> positions, List<double[]> headings)
     {
-        var edgeAvoidanceVector = Normalize(GetEdgeAvoidanceVector(), Attributes["edgeAvoidance"]);
-        var avoidVector = Normalize(GetAvoidVector(positions), Attributes["avoidance"]);
-        var centerVector = Normalize(GetCenterVector(positions), Attributes["coherence"]);
-        var percievedHeadingVector = GetPercievedHeadingVector(headings);
+        var edgeAvoidanceVector = Normalize(CalculateEdgeAvoidanceVector(), Attributes["edgeAvoidance"]);
+        var avoidVector = Normalize(CalculateBoidAvoidanceVector(positions), Attributes["avoidance"]);
+        var centerVector = Normalize(CalculateCenterVector(positions), Attributes["coherence"]);
+        var percievedHeadingVector = CalculatePercievedHeadingVector(headings);
 
         for (int i = 0; i < Heading.Length; i++)
         {
@@ -150,7 +145,7 @@ public class Boid
         if (vector[0] == 0 && vector[1] == 0)
             return vector;
         var length = Math.Sqrt(vector.Select(x => x * x).Sum());
-        return vector.Select(value => (value / length) * scale).ToArray();
+        return vector.Select(value => value / length * scale).ToArray();
     }
 
     public double DistanceTo(Boid boid)
