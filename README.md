@@ -32,7 +32,7 @@ The Python version of boids requires Python 3.9 or newer and the __Pygame__ and 
 
 ### C#
 
-The C# version of boids requires .NET 8. Navigate to the `/csharp/boids` folder
+The C# version of boids requires .NET 9. Navigate to the `/csharp/boids` folder
 and run the program with:
 
 	dotnet run
