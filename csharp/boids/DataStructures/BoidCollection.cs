@@ -1,27 +1,32 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Boids.Models;
 
 namespace Boids.DataStructures;
+
 public class BoidCollection
 {
-    public Boid[] Boids { get; private set; }
+    private readonly Config _config;
+    private Boid[] Boids { get; }
     public double[][] Positions => Boids.Select(b => b.Position).ToArray();
     public double[] Angles => Boids.Select(b => b.Angle).ToArray();
 
-    public BoidCollection(int numBoids)
+    public BoidCollection(Config config)
     {
-        var dimensions = Drawer.Dimensions;
+        _config = config;
+        var numBoids = config.NumBoids;
         Boids = new Boid[numBoids];
-        Random rand = new Random();
+        var rand = new Random();
 
-        for (var i = 0; i < numBoids; i++)
-            Boids[i] = new Boid(rand.Next(dimensions[0]), rand.Next(dimensions[1]));
+        for (var i = 0; i < config.NumBoids; i++)
+            Boids[i] = new Boid(rand.Next(config.Dimensions.Width),
+                rand.Next(config.Dimensions.Height), config);
     }
 
     public void Move()
     {
-        var viewDist = Boids[0].Attributes["viewDist"];
+        var viewDist = _config.Boid.ViewDist;
         List<double[]> positions = new();
         List<double[]> headings = new();
         for (int i = 0; i < Boids.Length; i++)
@@ -44,6 +49,7 @@ public class BoidCollection
                     visibleHeadings.Add(headings[j]);
                 }
             }
+
             Boids[i].Move(visiblePositions, visibleHeadings);
         }
     }

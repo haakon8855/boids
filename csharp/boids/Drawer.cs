@@ -2,35 +2,36 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Boids.DataStructures;
+using Boids.Models;
 
 namespace Boids;
 
 public class Drawer : Game
 {
-    private GraphicsDeviceManager _graphics;
+    private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
-    public static int[] Dimensions { get; private set; } = { 1200, 720 };
-    public int NumBoids { get; private set; } = 250;
-    public BoidCollection Boids { get; private set; }
-    public Texture2D WhiteRectangle { get; private set; }
+    private BoidCollection Boids { get; set; }
+    private Texture2D WhiteRectangle { get; set; }
     private Vector2 _boidSize = new Vector2(7f, 7f);
     private Color _bgColor = new Color(30, 30, 30);
     private Color _fgColor = new Color(100, 100, 170);
+    private Config Config { get; set; }
 
-    public Drawer()
+    public Drawer(Config config)
     {
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
+        Config = config;
     }
 
     protected override void Initialize()
     {
-        _graphics.PreferredBackBufferWidth = Dimensions[0];
-        _graphics.PreferredBackBufferHeight = Dimensions[1];
+        _graphics.PreferredBackBufferWidth = Config.Dimensions.Width;
+        _graphics.PreferredBackBufferHeight = Config.Dimensions.Height;
         _graphics.ApplyChanges();
 
-        Boids = new BoidCollection(NumBoids);
+        Boids = new BoidCollection(Config);
 
         base.Initialize();
     }
@@ -44,8 +45,11 @@ public class Drawer : Game
 
     protected override void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+            Keyboard.GetState().IsKeyDown(Keys.Escape))
+        {
             Exit();
+        }
 
         Boids.Move();
 
@@ -64,18 +68,18 @@ public class Drawer : Game
         for (var i = 0; i < boidPositions.Length; i++)
         {
             _spriteBatch.Draw(
-                WhiteRectangle,            // texture
-                new Vector2(
+                texture: WhiteRectangle,
+                position: new Vector2(
                     (float)boidPositions[i][0],
                     (float)boidPositions[i][1]
-                    ),                     // Position
-                null,                      // Source rectangle
-                _fgColor,                  // Color
-                (float)angles[i],          // Rotation
-                new Vector2(0.5f, 0.5f),   // Origin
-                _boidSize,                 // Scale
-                SpriteEffects.None,        // Effects
-                0f                         // layerDepth
+                ),
+                sourceRectangle: null,
+                color: _fgColor,
+                rotation: (float)angles[i],
+                origin: new Vector2(0.5f, 0.5f),
+                scale: _boidSize,
+                effects: SpriteEffects.None,
+                layerDepth: 0f
             );
         }
 

@@ -1,0 +1,17 @@
+﻿{
+  "numBoids": 250,
+  "dimensions": {
+    "width": 1200,
+    "height": 720
+  },
+  "boid": {
+    "velocity": 3.5,
+    "viewDist": 65,
+    "tooCloseDist": 15,
+    "edgeAvoidance": 0.02,
+    "avoidance": 0.12,
+    "coherence": 0.01,
+    "conformity": 0.04,
+    "edgeOffset": 0.2
+  }
+}

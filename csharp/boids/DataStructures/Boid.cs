@@ -1,59 +1,34 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Boids.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Boids.DataStructures;
 
-public class Boid
+public class Boid(double positionX, double positionY, Config config)
 {
-    public double[] Position { get; private set; }
+    public double[] Position { get; } = [positionX, positionY];
     public double[] Heading { get; private set; } = [0.5, 0.5];
     public double Angle => ((Heading[1] < 0) ? -1 : 1) * Math.Acos(Heading[0]);
-    public Dictionary<string, double> Attributes { get; private set; } = new();
-
-    public Boid(double positionX, double positionY)
-    {
-        Position = [positionX, positionY];
-        Initialize();
-    }
-
-    private void Initialize()
-    {
-        // Velocity of boids
-        Attributes["velocity"] = 3.5f;
-        // Distance when boid will try to avoid other boids
-        Attributes["viewDist"] = 65f;
-        // View distance of each boid
-        Attributes["tooCloseDist"] = 15f;
-        // How hard boids will turn when reaching the edge
-        Attributes["edgeAvoidance"] = 0.02f;
-        // How hard boids will turn when avoiding other boids
-        Attributes["avoidance"] = 0.12f;
-        // How much boid will try to be in middle of its group
-        Attributes["coherence"] = 0.01f;
-        // How much boid will try to follow direction of nearby boids
-        Attributes["conformity"] = 0.04f;
-        // When will edge avoidance kick in
-        Attributes["edgeOffset"] = 0.2f;
-    }
 
     private double[] CalculateEdgeAvoidanceVector()
     {
-        var offsetX = Drawer.Dimensions[0] * Attributes["edgeOffset"];
-        var offsetY = Drawer.Dimensions[1] * Attributes["edgeOffset"];
+        var offsetX = config.Dimensions.Width * config.Boid.EdgeOffset;
+        var offsetY = config.Dimensions.Height * config.Boid.EdgeOffset;
         double[] edgeAvoidanceVector = [0, 0];
 
         // X component
         if (Position[0] < offsetX)
             edgeAvoidanceVector[0] = offsetX - Position[0];
-        else if (Position[0] > Drawer.Dimensions[0] - offsetX)
-            edgeAvoidanceVector[0] = Drawer.Dimensions[0] - offsetX - Position[0];
+        else if (Position[0] > config.Dimensions.Width - offsetX)
+            edgeAvoidanceVector[0] = config.Dimensions.Width - offsetX - Position[0];
 
         // Y component
         if (Position[1] < offsetY)
             edgeAvoidanceVector[1] = offsetY - Position[1];
-        else if (Position[1] > Drawer.Dimensions[1] - offsetY)
-            edgeAvoidanceVector[1] = Drawer.Dimensions[1] - offsetY - Position[1];
+        else if (Position[1] > config.Dimensions.Height - offsetY)
+            edgeAvoidanceVector[1] = config.Dimensions.Height - offsetY - Position[1];
 
         return edgeAvoidanceVector;
     }
@@ -65,7 +40,7 @@ public class Boid
 
         foreach (var position in positions)
         {
-            if (DistanceBetween(Position, position) < Attributes["tooCloseDist"])
+            if (DistanceBetween(Position, position) < config.Boid.TooCloseDist)
             {
                 tooCloseBoids.Add(position);
             }
@@ -74,7 +49,8 @@ public class Boid
         double[] diff;
         foreach (var position in tooCloseBoids)
         {
-            diff = [
+            diff =
+            [
                 position[0] - Position[0],
                 position[1] - Position[1]
             ];
@@ -87,7 +63,8 @@ public class Boid
 
     private double[] CalculateCenterVector(List<double[]> positions)
     {
-        return [
+        return
+        [
             (positions.Select(p => p[0]).Sum() / positions.Count()) - Position[0],
             (positions.Select(p => p[1]).Sum() / positions.Count()) - Position[1]
         ];
@@ -108,7 +85,7 @@ public class Boid
         {
             percievedHeadingVector[i] /= headings.Count();
             percievedHeadingVector[i] -= Heading[i];
-            percievedHeadingVector[i] *= Attributes["conformity"];
+            percievedHeadingVector[i] *= config.Boid.Conformity;
         }
 
         return percievedHeadingVector;
@@ -116,18 +93,18 @@ public class Boid
 
     private void UpdateHeading(List<double[]> positions, List<double[]> headings)
     {
-        var edgeAvoidanceVector = Normalize(CalculateEdgeAvoidanceVector(), Attributes["edgeAvoidance"]);
-        var avoidVector = Normalize(CalculateBoidAvoidanceVector(positions), Attributes["avoidance"]);
-        var centerVector = Normalize(CalculateCenterVector(positions), Attributes["coherence"]);
+        var edgeAvoidanceVector = Normalize(CalculateEdgeAvoidanceVector(), config.Boid.EdgeAvoidance);
+        var avoidVector = Normalize(CalculateBoidAvoidanceVector(positions), config.Boid.Avoidance);
+        var centerVector = Normalize(CalculateCenterVector(positions), config.Boid.Coherence);
         var percievedHeadingVector = CalculatePercievedHeadingVector(headings);
 
         for (int i = 0; i < Heading.Length; i++)
         {
             Heading[i] = Heading[i] +
-                          edgeAvoidanceVector[i] +
-                          avoidVector[i] +
-                          centerVector[i] +
-                          percievedHeadingVector[i];
+                         edgeAvoidanceVector[i] +
+                         avoidVector[i] +
+                         centerVector[i] +
+                         percievedHeadingVector[i];
         }
 
         Heading = Normalize(Heading, 1f);
@@ -137,7 +114,7 @@ public class Boid
     {
         UpdateHeading(positions, headings);
         for (int i = 0; i < Position.Length; i++)
-            Position[i] += Heading[i] * Attributes["velocity"];
+            Position[i] += Heading[i] * config.Boid.Velocity;
     }
 
     public static double[] Normalize(double[] vector, double scale)
