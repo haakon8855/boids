@@ -6,23 +6,23 @@
       30,
       30,
       30
-    ],
+    ]
+  },
+  "boids": {
+    "numberOfBoids": 600,
+    "boidSize": 7.0,
+    "velocity": 3.5,
+    "viewDist": 65,
+    "tooCloseDist": 10,
+    "edgeAvoidance": 0.02,
+    "avoidance": 0.12,
+    "coherence": 0.01,
+    "conformity": 0.04,
+    "edgeOffset": 0.2,
     "boidColor": [
       100,
       100,
       170
     ]
-  },
-  "boids": {
-    "numberOfBoids": 500,
-    "boidSize": 7,
-    "velocity": 3.5,
-    "viewDist": 65,
-    "tooCloseDist": 15,
-    "edgeAvoidance": 0.02,
-    "avoidance": 0.12,
-    "coherence": 0.01,
-    "conformity": 0.04,
-    "edgeOffset": 0.2
   }
 }

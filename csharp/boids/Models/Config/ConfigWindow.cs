@@ -1,9 +1,8 @@
-﻿namespace Boids.Models;
+﻿namespace Boids.Models.Config;
 
-public class Window
+public class ConfigWindow
 {
     public int Width { get; set; }
     public int Height { get; set; }
     public int[] BackgroundColor { get; set; }
-    public int[] BoidColor { get; set; }
 }

@@ -1,33 +1,32 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Boids.Models;
+using Boids.Models.Config;
 
 namespace Boids.DataStructures;
 
-public class Boid(double positionX, double positionY, Configuration configuration)
+public class Boid(double posX, double posY, Config config)
 {
-    public double[] Position { get; } = [positionX, positionY];
+    public double[] Position { get; } = [posX, posY];
     public double[] Heading { get; private set; } = GetRandomStartVelocity();
-    public double Angle => (Heading[1] < 0 ? -1 : 1) * Math.Acos(Heading[0]);
 
     private double[] CalculateEdgeAvoidanceVector()
     {
-        var offsetX = configuration.Window.Width * configuration.Boids.EdgeOffset;
-        var offsetY = configuration.Window.Height * configuration.Boids.EdgeOffset;
+        var offsetX = config.Window.Width * config.Boids.EdgeOffset;
+        var offsetY = config.Window.Height * config.Boids.EdgeOffset;
         double[] edgeAvoidanceVector = [0, 0];
 
         // X component
         if (Position[0] < offsetX)
             edgeAvoidanceVector[0] = offsetX - Position[0];
-        else if (Position[0] > configuration.Window.Width - offsetX)
-            edgeAvoidanceVector[0] = configuration.Window.Width - offsetX - Position[0];
+        else if (Position[0] > config.Window.Width - offsetX)
+            edgeAvoidanceVector[0] = config.Window.Width - offsetX - Position[0];
 
         // Y component
         if (Position[1] < offsetY)
             edgeAvoidanceVector[1] = offsetY - Position[1];
-        else if (Position[1] > configuration.Window.Height - offsetY)
-            edgeAvoidanceVector[1] = configuration.Window.Height - offsetY - Position[1];
+        else if (Position[1] > config.Window.Height - offsetY)
+            edgeAvoidanceVector[1] = config.Window.Height - offsetY - Position[1];
 
         return edgeAvoidanceVector;
     }
@@ -39,7 +38,7 @@ public class Boid(double positionX, double positionY, Configuration configuratio
 
         tooCloseBoids.AddRange(
             positions.Where(
-                position => DistanceBetween(Position, position) < configuration.Boids.TooCloseDist
+                position => DistanceBetween(Position, position) < config.Boids.TooCloseDist
             )
         );
 
@@ -81,7 +80,7 @@ public class Boid(double positionX, double positionY, Configuration configuratio
         {
             perceivedHeadingVector[i] /= headings.Count;
             perceivedHeadingVector[i] -= Heading[i];
-            perceivedHeadingVector[i] *= configuration.Boids.Conformity;
+            perceivedHeadingVector[i] *= config.Boids.Conformity;
         }
 
         return perceivedHeadingVector;
@@ -89,9 +88,9 @@ public class Boid(double positionX, double positionY, Configuration configuratio
 
     private void UpdateHeading(List<double[]> positions, List<double[]> headings)
     {
-        var edgeAvoidanceVector = Normalize(CalculateEdgeAvoidanceVector(), configuration.Boids.EdgeAvoidance);
-        var avoidVector = Normalize(CalculateBoidAvoidanceVector(positions), configuration.Boids.Avoidance);
-        var centerVector = Normalize(CalculateCenterVector(positions), configuration.Boids.Coherence);
+        var edgeAvoidanceVector = Normalize(CalculateEdgeAvoidanceVector(), config.Boids.EdgeAvoidance);
+        var avoidVector = Normalize(CalculateBoidAvoidanceVector(positions), config.Boids.Avoidance);
+        var centerVector = Normalize(CalculateCenterVector(positions), config.Boids.Coherence);
         var perceivedHeadingVector = CalculatePerceivedHeadingVector(headings);
 
         for (var i = 0; i < Heading.Length; i++)
@@ -111,7 +110,7 @@ public class Boid(double positionX, double positionY, Configuration configuratio
         UpdateHeading(positions, headings);
         for (var i = 0; i < Position.Length; i++)
         {
-            Position[i] += Heading[i] * configuration.Boids.Velocity;
+            Position[i] += Heading[i] * config.Boids.Velocity;
         }
     }
 

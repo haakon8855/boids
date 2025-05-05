@@ -1,12 +1,11 @@
 ﻿using Boids;
-using Boids.Models;
+using Boids.Models.Config;
 using Microsoft.Extensions.Configuration;
 
 var config = new ConfigurationBuilder()
     .AddJsonFile("config.json")
-    .Build();
-var configModel = config.Get<Configuration>();
+    .Build()
+    .Get<Config>();
 
-using var game = new Monogame(configModel);
-
-game.Run();
+var window = new Window(config);
+window.Run();

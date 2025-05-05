@@ -1,36 +1,37 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Boids.Models;
+using Boids.Models.Config;
 
 namespace Boids.DataStructures;
 
 public class BoidCollection
 {
-    private readonly Configuration _configuration;
+    private readonly Config _config;
     private Boid[] Boids { get; }
-    public double[][] Positions => Boids.Select(b => b.Position).ToArray();
-    public double[] Angles => Boids.Select(b => b.Angle).ToArray();
 
-    public BoidCollection(Configuration configuration)
+    public double[][] Positions => Boids.Select(b => b.Position).ToArray();
+    public double[][] Headings => Boids.Select(b => b.Heading).ToArray();
+
+    public BoidCollection(Config config)
     {
-        _configuration = configuration;
-        Boids = new Boid[_configuration.Boids.NumberOfBoids];
+        _config = config;
+        Boids = new Boid[_config.Boids.NumberOfBoids];
         var rand = new Random();
 
-        for (var i = 0; i < _configuration.Boids.NumberOfBoids; i++)
+        for (var i = 0; i < _config.Boids.NumberOfBoids; i++)
         {
             Boids[i] = new Boid(
-                rand.Next(_configuration.Window.Width),
-                rand.Next(_configuration.Window.Height),
-                _configuration
+                rand.Next(_config.Window.Width),
+                rand.Next(_config.Window.Height),
+                _config
             );
         }
     }
 
     public void Move()
     {
-        var viewDist = _configuration.Boids.ViewDist;
+        var viewDist = _config.Boids.ViewDist;
         List<double[]> positions = [];
         List<double[]> headings = [];
         foreach (var boid in Boids)
