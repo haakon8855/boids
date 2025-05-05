@@ -1,7 +1,9 @@
 ﻿namespace Boids.Models;
 
-public class Boid
+public class Boids
 {
+    public int NumberOfBoids { get; set; }
+    public int BoidSize { get; set; }
     public double Velocity { get; set; }
     public double ViewDist { get; set; }
     public double TooCloseDist { get; set; }

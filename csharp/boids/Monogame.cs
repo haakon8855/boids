@@ -6,32 +6,30 @@ using Boids.Models;
 
 namespace Boids;
 
-public class Drawer : Game
+public class Monogame : Game
 {
     private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+    
     private BoidCollection Boids { get; set; }
     private Texture2D WhiteRectangle { get; set; }
-    private Vector2 _boidSize = new Vector2(7f, 7f);
-    private Color _bgColor = new Color(30, 30, 30);
-    private Color _fgColor = new Color(100, 100, 170);
-    private Config Config { get; set; }
+    private Configuration Configuration { get; set; }
 
-    public Drawer(Config config)
+    public Monogame(Configuration configuration)
     {
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
-        Config = config;
+        Configuration = configuration;
     }
 
     protected override void Initialize()
     {
-        _graphics.PreferredBackBufferWidth = Config.Dimensions.Width;
-        _graphics.PreferredBackBufferHeight = Config.Dimensions.Height;
+        _graphics.PreferredBackBufferWidth = Configuration.Window.Width;
+        _graphics.PreferredBackBufferHeight = Configuration.Window.Height;
         _graphics.ApplyChanges();
 
-        Boids = new BoidCollection(Config);
+        Boids = new BoidCollection(Configuration);
 
         base.Initialize();
     }
@@ -40,7 +38,7 @@ public class Drawer : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         WhiteRectangle = new Texture2D(GraphicsDevice, 1, 1);
-        WhiteRectangle.SetData(new[] { Color.White });
+        WhiteRectangle.SetData([Color.White]);
     }
 
     protected override void Update(GameTime gameTime)
@@ -58,7 +56,11 @@ public class Drawer : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(_bgColor);
+        GraphicsDevice.Clear(new Color(
+            Configuration.Window.BackgroundColor[0],
+            Configuration.Window.BackgroundColor[1],
+            Configuration.Window.BackgroundColor[2])
+        );
 
         _spriteBatch.Begin();
 
@@ -74,10 +76,14 @@ public class Drawer : Game
                     (float)boidPositions[i][1]
                 ),
                 sourceRectangle: null,
-                color: _fgColor,
+                color: new Color(
+                    Configuration.Window.BoidColor[0],
+                    Configuration.Window.BoidColor[1],
+                    Configuration.Window.BoidColor[2]
+                ),
                 rotation: (float)angles[i],
                 origin: new Vector2(0.5f, 0.5f),
-                scale: _boidSize,
+                scale: Configuration.Boids.BoidSize,
                 effects: SpriteEffects.None,
                 layerDepth: 0f
             );

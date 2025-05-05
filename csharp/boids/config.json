@@ -1,10 +1,21 @@
 ﻿{
-  "numBoids": 250,
-  "dimensions": {
-    "width": 1200,
-    "height": 720
+  "window": {
+    "width": 1500,
+    "height": 900,
+    "backgroundColor": [
+      30,
+      30,
+      30
+    ],
+    "boidColor": [
+      100,
+      100,
+      170
+    ]
   },
-  "boid": {
+  "boids": {
+    "numberOfBoids": 500,
+    "boidSize": 7,
     "velocity": 3.5,
     "viewDist": 65,
     "tooCloseDist": 15,
