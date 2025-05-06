@@ -4,5 +4,6 @@ public class ConfigWindow
 {
     public int Width { get; set; }
     public int Height { get; set; }
+    public bool Fullscreen { get; set; }
     public int[] BackgroundColor { get; set; }
 }

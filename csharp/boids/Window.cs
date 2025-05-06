@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Threading;
 using Boids.DataStructures;
 using Boids.Models.Config;
 using Raylib_cs;
@@ -8,7 +9,7 @@ namespace Boids;
 public class Window(Config config)
 {
     private Config Config { get; } = config;
-    private BoidCollection Boids { get; } = new(config);
+    private BoidCollection Boids { get; set; }
 
     private Color BackgroundColor { get; } = new(
         config.Window.BackgroundColor[0],
@@ -19,10 +20,20 @@ public class Window(Config config)
     public void Run()
     {
         Raylib.InitWindow(Config.Window.Width, Config.Window.Height, "Boids");
+        Raylib.SetTargetFPS(60);
+
+        if (Config.Window.Fullscreen)
+        {
+            Raylib.ToggleBorderlessWindowed();
+            Config.Window.Width = Raylib.GetRenderWidth();
+            Config.Window.Height = Raylib.GetRenderHeight();
+        }
+
+        Boids = new BoidCollection(Config);
 
         while (!Raylib.WindowShouldClose())
         {
-            Boids.Move();
+            new Thread(Boids.Move).Start();
             Draw();
         }
 
@@ -44,7 +55,7 @@ public class Window(Config config)
             var posY = (float)positions[i][1];
             var angX = (float)angles[i][0];
             var angY = (float)angles[i][1];
-            
+
             var vertex1 = new Vector2(
                 posX + angX * size,
                 posY + angY * size
@@ -57,7 +68,7 @@ public class Window(Config config)
                 posX - (angY + angX) * size / 2,
                 posY + (angX - angY) * size / 2
             );
-            
+
             Raylib.DrawTriangle(
                 vertex1,
                 vertex2,

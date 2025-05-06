@@ -2,6 +2,7 @@
   "window": {
     "width": 1500,
     "height": 900,
+    "fullscreen": false,
     "backgroundColor": [
       30,
       30,
@@ -9,7 +10,7 @@
     ]
   },
   "boids": {
-    "numberOfBoids": 600,
+    "numberOfBoids": 1200,
     "boidSize": 7.0,
     "velocity": 3.5,
     "viewDist": 65,
